@@ -8,14 +8,14 @@ LiquidCrystal_I2C lcd(0x27, 16, 2);
 Preferences preferences;
 WebServer server(80);
 
-// Pin Config
+// Hardware Pin Configuration
 const int trigPin = 5;
 const int echoPin = 18;
 const int potPin = 34; 
-const int btnCycle = 4; // Cycles_options
-const int btnOK = 15;   // Confirms_my_selection
-const int ledRed = 23;  // Priority_LED
-const int ledGreen = 19;// Routine_LED
+const int btnCycle = 4; // Cycles options
+const int btnOK = 15;   // Confirms selection
+const int ledRed = 23;  // Priority LED
+const int ledGreen = 19;// Routine LED
 
 // Core State Machines
 enum State { MENU, RUN_TRIAGE, SYS_CONFIG, SYS_INFO };
@@ -25,7 +25,7 @@ State currentState = MENU;
 enum TriageState { WAITING, GET_TEMP, GET_RESP, GET_HYDRATION, GET_VULN, SHOW_RESULT };
 TriageState triageState = WAITING;
 
-
+// Triage Variables
 float currentTemp = 0.0;
 int currentResp = 0;       // 0: Normal, 1: Laboured, 2: Critical
 int currentHydration = 0;  // 0: Normal, 1: Mild/Weak, 2: Severe Dehydration
@@ -34,7 +34,7 @@ int totalTriages = 0;
 int prioLevel = 3;
 String prioLabel = "PENDING";
 
-// mapping for my Web Dashboard & LCD
+// String Mapping for Web Dashboard & LCD
 const char* respStr[] = {"Normal", "Laboured", "Critical"};
 const char* hydStr[] = {"Normal", "Mild/Weak", "Severe Dehydration"};
 const char* vulnStr[] = {"None", "Pregnant", "Pediatric"};
@@ -52,10 +52,13 @@ const char* menuItems[] = {
 int infoIndex = 0;
 const int totalCredits = 4;
 const char* credits[] = {
-  "MABHENA. JW"
+  "MABHENA. JW",
+  "HALUMAMBA .K",
+  "CHANDA. B",
+  "TUMWENDILA. M"
 };
 
-
+// Non-blocking button timing
 unsigned long lastBtnPress = 0;
 
 bool isBtnPressed(int pin) {
@@ -66,14 +69,14 @@ bool isBtnPressed(int pin) {
   return false;
 }
 
-// ====== WEB DASHBOAR==========
+// ======================== WEB DASHBOARD ========================
 void handleRoot() {
   String html = "<!DOCTYPE html><html lang='en'><head>";
   html += "<meta charset='UTF-8'>"; 
   html += "<meta http-equiv='refresh' content='2'>";
   html += "<title>Group 8 Triage Hub</title>";
   
-  // JavaScript handling my Light/Dark mode.
+  // JavaScript to handle Light/Dark mode persistently
   html += "<script>";
   html += "let theme = localStorage.getItem('theme') || 'dark';";
   html += "document.documentElement.setAttribute('data-theme', theme);";
@@ -84,7 +87,7 @@ void handleRoot() {
   html += "}";
   html += "</script>";
   
-  //  theme
+  // Gemini-inspired CSS Themes
   html += "<style>";
   html += ":root[data-theme='dark'] { --bg: #131314; --box-bg: #1e1f20; --text: #e3e3e3; --border: #444746; --btn-bg: #004a77; --btn-text: #c2e7ff; --norm: #4dff4d; --hl: #ffea00; }";
   html += ":root[data-theme='light'] { --bg: #f0f4f9; --box-bg: #ffffff; --text: #1f1f1f; --border: #c4c7c5; --btn-bg: #c2e7ff; --btn-text: #001d35; --norm: #1f883d; --hl: #d97706; }";
@@ -166,7 +169,7 @@ void setup() {
   lcd.clear();
 }
 
-// ========= LOOP ========================
+// ======================== LOOP ========================
 void loop() {
   server.handleClient(); 
 
@@ -178,7 +181,7 @@ void loop() {
   }
 }
 
-// ======================== SUB-SYSTE====================
+// ======================== SUB-SYSTEMS ========================
 
 void drawMenuScreen() {
   digitalWrite(ledRed, LOW);
